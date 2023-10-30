@@ -9,7 +9,11 @@ const { validHeader, validateRow, ALLOWED_CSV_HEADERS } = require('../utils/vali
 // Get all records
 // TODO change to async await
 exports.getAllRecords = (req, res) => {
-    Records.findAll()
+    Records.findAll({
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+    })
         .then((data) => {
             if (data) {
                 return res.status(200).json(data);
