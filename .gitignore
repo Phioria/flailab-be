@@ -16,3 +16,9 @@ yarn-error.log
 .DS_Store
 prettierrc.json
 .eslintrc.json
+
+# Logs
+/.logs
+
+# CSV Uploads
+*.csv
