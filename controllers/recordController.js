@@ -150,6 +150,8 @@ exports.updateRecord = (req, res) => {
         return res.status(400).json({ message: 'Record ID required' });
     const id = req.body.rid;
     */
+    // TODO - This is no longer req.body.rid
+    // todo - We're probably not using this method anymore, but jic
     if (!req?.body?.rid) {
         return res.status(400).json({ message: 'Record data required' });
     }
@@ -169,6 +171,31 @@ exports.updateRecord = (req, res) => {
             return res.status(500).json({ message: err.message });
         });
 }; // End updateRecord function
+
+// Update multiple records
+exports.updateRecords = async (req, res) => {
+    const submittedRecords = req.body;
+    console.warn('Submitted Records');
+    console.info(submittedRecords);
+    if (!submittedRecords || !submittedRecords.length) return res.status(400).json({ message: 'No tracks submitted' });
+
+    try {
+        const result = await Promise.all(
+            submittedRecords.map(async (track) => {
+                const currentResult = await Records.update(track, {
+                    where: { rid: track.rid },
+                });
+                return currentResult;
+            })
+        );
+        const message = result.length === 1 ? `${result.length} track updated.` : `${result.length} tracks updated.`;
+        console.log(message);
+        return res.status(200).json({ message: message });
+    } catch (err) {
+        console.log(err.message);
+        res.status(500).json({ message: err.message });
+    }
+};
 
 // Delete Record
 exports.deleteRecord = async (req, res) => {
