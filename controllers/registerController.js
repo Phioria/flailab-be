@@ -8,7 +8,7 @@ const { PORT, BASE_URL } = require('../config/serverInfo');
 
 const handleNewUser = async (req, res) => {
     const { user, pwd, firstName, lastName } = req.body;
-    console.log(req.body);
+
     // If any fields are missing, render signup page with error message
     // This shouldn't ever happen since validation is happening on the front end,
     // But just in case...

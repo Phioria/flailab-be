@@ -42,8 +42,6 @@ const sendMail = async (recipientEmail, recipientFirstName, tokenLink) => {
         </html>`,
     });
 
-    // TODO Add logger functionality here
-    console.log('Message sent: %s', info.messageId);
     return info;
 };
 
@@ -88,8 +86,6 @@ const updatePasswordLink = async (recipientEmail, tokenLink) => {
         </html>`,
     });
 
-    // TODO Add logger functionality here
-    console.log('Message sent: %s', info.messageId);
     return info;
 };
 

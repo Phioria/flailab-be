@@ -25,7 +25,7 @@ const verifyJWT = (req, res, next) => {
         // Setup in refreshTokenController.js
         req.user = decoded.UserInfo.username;
         req.roles = decoded.UserInfo.roles;
-        console.log(req.roles);
+
         next();
     });
 };

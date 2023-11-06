@@ -61,7 +61,6 @@ exports.createMultipleRecords = async (req, res) => {
         const storedFilename = `${Date.now()}-omicsbase-${newFile.name}`;
         const uploadPath = './assets/uploads/' + storedFilename;
 
-        //console.log(newFile.mimetype);
         if (newFile.mimetype !== 'text/csv') {
             logger.log('info', `[createMultipleRecords] - USER: [${user_name}] attempted to upload a non-csv file`);
             return res.status(400).json({
