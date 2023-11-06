@@ -3,13 +3,14 @@ const Records = db.record;
 //const Op = db.Sequelize.Op;
 const fs = require('fs');
 const csv = require('fast-csv');
+const logger = require('../utils/logger');
 const { validHeader, validateRow, ALLOWED_CSV_HEADERS } = require('../utils/validateCsv');
 
 // Get Methods
 // Get all records
 // TODO change to async await
-exports.getAllRecords = (req, res) => {
-    Records.findAll({
+exports.getAllRecords = async (req, res) => {
+    await Records.findAll({
         attributes: {
             exclude: ['createdAt', 'updatedAt'],
         },
@@ -22,6 +23,7 @@ exports.getAllRecords = (req, res) => {
             }
         })
         .catch((err) => {
+            logger.log('error', `[getAllRecords] - ${err.message}`);
             return res.status(500).json({ message: err.message });
         });
 }; // End getAllRecords function
@@ -29,9 +31,18 @@ exports.getAllRecords = (req, res) => {
 // Get one record by :id
 exports.getRecord = async (req, res) => {
     const { id } = req.params;
-    const foundRecord = await Records.findOne({ where: { rid: id } });
-    if (!foundRecord) return res.sendStatus(404);
-    return res.status(200).json(foundRecord);
+
+    try {
+        const foundRecord = await Records.findOne({ where: { rid: id } });
+        if (!foundRecord) {
+            logger.log('info', `[getRecord] - No RECORD found with ID: [${id}]`);
+            return res.sendStatus(404);
+        }
+        return res.status(200).json(foundRecord);
+    } catch (err) {
+        logger.error('error', `[getRecord] - ${err.message}`);
+        return res.status(500).json({ message: err.message });
+    }
 }; // End getRecord function
 
 // Post Methods
@@ -46,14 +57,13 @@ exports.createMultipleRecords = async (req, res) => {
             return res.status(400).json({ message: 'No files were uploaded.', reason: 'empty' });
         }
 
-        console.log(req.files.newFile);
-
         const newFile = req.files.newFile;
         const storedFilename = `${Date.now()}-omicsbase-${newFile.name}`;
         const uploadPath = './assets/uploads/' + storedFilename;
 
         //console.log(newFile.mimetype);
         if (newFile.mimetype !== 'text/csv') {
+            logger.log('info', `[createMultipleRecords] - USER: [${user_name}] attempted to upload a non-csv file`);
             return res.status(400).json({
                 message: 'File received was not a CSV file.',
                 reason: 'file-type',
@@ -67,7 +77,7 @@ exports.createMultipleRecords = async (req, res) => {
 
             fs.createReadStream(uploadPath)
                 .pipe(csv.parse({ headers: true, trim: true, ignoreEmpty: true }))
-                .on('error', (error) => console.log(`CSV Upload Error: ${error}`))
+                .on('error', (error) => logger.log('error', `[createMultipleRecords] - CSV Upload Error: ${error}`))
                 .on('headers', (headers) => {
                     headers.map((header) => {
                         if (!validHeader(header)) bad_headers.push(header);
@@ -89,6 +99,7 @@ exports.createMultipleRecords = async (req, res) => {
                 })
                 // TODO: Refactor return statements to just edit the message and have a single return at the end?
                 .on('end', (rowCount) => {
+                    // I don't think we need to log when a user tries to upload a CSV file that doesn't have the right headers, etc
                     if (bad_headers.length && !bad_rows.length) {
                         return res.status(400).json({
                             message: 'The column headers for the file submitted are not valid',
@@ -113,13 +124,15 @@ exports.createMultipleRecords = async (req, res) => {
                             .then(() => {
                                 const successMessage =
                                     rowCount === 1
-                                        ? `${rowCount} row added to the database successfully.`
-                                        : `${rowCount} rows added to the database successfully.`;
+                                        ? `${rowCount} row added to the database successfully`
+                                        : `${rowCount} rows added to the database successfully`;
+                                logger.log('info', `[createMultipleRecords] - ${successMessage} by USER: [${user_name}]`);
                                 return res.status(201).json({ message: successMessage });
                             })
-                            .catch((error) => {
+                            .catch((err) => {
+                                logger.log('error', `[createMultipleRecords] - ${err.msg}`);
                                 res.status(500).json({
-                                    message: error.message,
+                                    message: err.message,
                                 });
                             });
                     }
@@ -128,55 +141,24 @@ exports.createMultipleRecords = async (req, res) => {
             // Delete the uploaded file, as it is no longer needed
             fs.unlink(uploadPath, (err) => {
                 if (err) {
+                    logger.log('error', `[createMultipleRecords] - Upload Deletion Error - ${err.message}`);
                     throw err;
                 }
-                console.log(`${storedFilename} deleted successfully.`);
+                logger.log('info', `[createMultipleRecords] - ${storedFilename} deleted successfully.`);
             });
         }
-    } catch (error) {
-        console.log(error);
+    } catch (err) {
+        logger.log('error', `[createMultipleRecords] - ${err.message}`);
         res.status(500).send({
             message: 'Could not upload the file: ' + newFile.name,
         });
     }
 }; // End createMultipleRecords function
 
-// Update Record :id
-// TODO Change to async await
-exports.updateRecord = (req, res) => {
-    const { id } = req.params;
-    /*
-    if (!req?.body?.rid)
-        return res.status(400).json({ message: 'Record ID required' });
-    const id = req.body.rid;
-    */
-    // TODO - This is no longer req.body.rid
-    // todo - We're probably not using this method anymore, but jic
-    if (!req?.body?.rid) {
-        return res.status(400).json({ message: 'Record data required' });
-    }
-    Records.update(req.body, {
-        where: { rid: id },
-    })
-        .then((num) => {
-            if (num == 1) {
-                return res.status(200);
-            } else {
-                return res.status(500).json({
-                    message: 'Track was not able to be updated at this time.',
-                });
-            }
-        })
-        .catch((err) => {
-            return res.status(500).json({ message: err.message });
-        });
-}; // End updateRecord function
-
 // Update multiple records
 exports.updateRecords = async (req, res) => {
     const submittedRecords = req.body;
-    console.warn('Submitted Records');
-    console.info(submittedRecords);
+
     if (!submittedRecords || !submittedRecords.length) return res.status(400).json({ message: 'No tracks submitted' });
 
     try {
@@ -188,11 +170,11 @@ exports.updateRecords = async (req, res) => {
                 return currentResult;
             })
         );
-        const message = result.length === 1 ? `${result.length} track updated.` : `${result.length} tracks updated.`;
-        console.log(message);
+        const message = result.length === 1 ? `${result.length} track updated` : `${result.length} tracks updated`;
+        logger.log('info', `[updateRecords] - ${message} by USER: [${req.user}]`);
         return res.status(200).json({ message: message });
     } catch (err) {
-        console.log(err.message);
+        logger.log('error', `[updateRecords] - ${err.message}`);
         res.status(500).json({ message: err.message });
     }
 };
@@ -202,22 +184,29 @@ exports.deleteRecord = async (req, res) => {
     const { id } = req.params;
     if (!id) return res.status(400).json({ message: 'No id submitted' });
 
-    const track = await Records.findByPk(id);
-    if (!track) return res.sendStatus(204); // Track doesn't exist, so no content to return
+    try {
+        const track = await Records.findByPk(id);
+        if (!track) return res.sendStatus(204); // Track doesn't exist, so no content to return
 
-    await track
-        .destroy()
-        .then(() => res.sendStatus(204))
-        .catch((err) => {
-            return res.status(500).json({ message: err.message });
-        });
+        await track
+            .destroy()
+            .then(() => {
+                logger.log('info', `[deleteRecord] - RECORD ID: ${id} deleted`);
+                return res.sendStatus(204);
+            })
+            .catch((err) => {
+                logger.log('error', `[deleteRecord] - ${err.message}`);
+                return res.status(500).json({ message: err.message });
+            });
+    } catch (err) {
+        logger.log('error', `[deleteRecord] - ${err.message}`);
+        return res.status(500).json({ message: err.message });
+    }
 }; // End deleteRecord function
 
 // Delete Multiple Records
 exports.deleteRecords = async (req, res) => {
     const { ids } = req.body;
-    console.log(ids);
-    res.sendStatus(204);
 
     if (!ids || ids.length === 0) return res.status(400).json({ message: 'No ids submitted' });
 
@@ -228,8 +217,10 @@ exports.deleteRecords = async (req, res) => {
                 rid: ids,
             },
         });
-        return res.sendStatus;
+        logger.log('info', `[deleteRecords] = ${ids.length} record(s) destroyed by USER: [${req.user}]`);
+        return res.sendStatus(204);
     } catch (err) {
-        return res.send(500).json({ message: err.message });
+        logger.log('error', `[deleteRecords] - ${err.message}`);
+        return res.status(500).json({ message: err.message });
     }
 }; // End deleteRecords function

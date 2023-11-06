@@ -19,10 +19,6 @@ router
     .put(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor), updateRecords)
     .delete(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor), deleteRecords);
 
-router
-    .route('/:id')
-    .get(getRecord)
-    .put(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor), updateRecord)
-    .delete(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor), deleteRecord);
+router.route('/:id').get(getRecord).delete(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor), deleteRecord);
 
 module.exports = router;
