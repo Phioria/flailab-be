@@ -19,6 +19,7 @@ const handleVerification = async (req, res) => {
         foundUser.isVerified = true;
         foundUser.email_token = '';
         await foundUser.save();
+        logger.log('info', `[handleVerification] - USER: [${foundUser.username}] has been verified`);
         return res.status(204).json({ message: 'Verified' });
     }
 };

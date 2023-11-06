@@ -1,10 +1,11 @@
 const Users = require('../models').user;
 const jwt = require('jsonwebtoken');
+const logger = require('../utils/logger');
 
 const handleRefreshToken = async (req, res) => {
     const cookies = req.cookies;
     if (!cookies?.jwt) return res.sendStatus(401);
-    //console.log(cookies.jwt);
+
     const refreshToken = cookies.jwt;
 
     const foundUser = await Users.findOne({
@@ -15,6 +16,7 @@ const handleRefreshToken = async (req, res) => {
     // Evaluate jwt
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
         if (err || foundUser.username !== decoded.username) {
+            logger.log('info', `[handleRefreshToken] - Usernames did not match - DB: [${foundUser.username}] - TOKEN: [${decoded.username}]`);
             return res.sendStatus(403);
         }
         const username = foundUser.username;

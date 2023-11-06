@@ -3,6 +3,7 @@ const Users = db.user;
 const bcrypt = require('bcrypt');
 const { sendMail } = require('../utils/mailer');
 const randomBytes = require('randombytes');
+const logger = require('../utils/logger');
 const { PORT, BASE_URL } = require('../config/serverInfo');
 
 const handleNewUser = async (req, res) => {
@@ -11,19 +12,15 @@ const handleNewUser = async (req, res) => {
     // If any fields are missing, render signup page with error message
     // This shouldn't ever happen since validation is happening on the front end,
     // But just in case...
-    if (!user || !pwd || !firstName || !lastName) {
-        console.log('Missing Data Error');
-        return res.sendStatus(400);
-    }
+    if (!user || !pwd || !firstName || !lastName) return res.sendStatus(400);
 
     // Check for duplicate usernames in the database
     const duplicate = await Users.findOne({ where: { username: user } });
     if (duplicate) {
-        console.log('Duplicate User Error');
+        logger.log('info', `[handleNewUser] - Duplicate user error for USER: [${user}]`);
         return res.sendStatus(409); // (409) = conflict
     }
     try {
-        console.log('Success!');
         // Encrypt and salt the password
         const hashedPwd = await bcrypt.hash(pwd, 10);
         // Store the new user
@@ -45,9 +42,10 @@ const handleNewUser = async (req, res) => {
 
         // Added await here, sendMail() is an async function, so it returns a promise
         await sendMail(createdUser.username, createdUser.first_name, tokenLink);
-
+        logger.log('info', `[handleNewUser] - USER [${user}] has registered`);
         return res.sendStatus(201);
     } catch (err) {
+        logger.log('error', `[handleNewUser] - ${err.message}`);
         return res.status(500).json({ message: err.message });
     }
 };
@@ -75,11 +73,14 @@ const sendVerificationEmail = async (req, res) => {
         try {
             await foundUser.update({ email_token: emailToken, email_token_exp: tokenExpiration });
             await sendMail(foundUser.username, foundUser.first_name, emailTokenLink);
+            logger.log('info', `[sendVerificationEmail] - New Email sent to USER: [${user}]`);
             return res.sendStatus(201);
         } catch (err) {
+            logger.log('error', `[sendVerificationEmail] - ${err.message}`);
             return res.status(500).json({ message: err.message });
         }
     } catch (err) {
+        logger.log('error', `[sendVerificationEmail] - ${err.message}`);
         return res.status(500).json({ message: err.message });
     }
 };
