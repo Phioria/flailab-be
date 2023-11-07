@@ -1,5 +1,7 @@
 // create express server
 const express = require('express');
+const https = require('node:https');
+const fs = require('node:fs');
 const path = require('path');
 const cors = require('cors');
 const corsOptions = require('./config/corsOptions');
@@ -9,7 +11,6 @@ const cookieParser = require('cookie-parser');
 const credentials = require('./middlewares/credentials');
 const morganMiddleware = require('./middlewares/morgan');
 const fileUpload = require('express-fileupload');
-//require('dotenv').config();
 const app = express();
 
 const PORT = process.env.PORT || 5001;
@@ -65,4 +66,10 @@ app.all('*', (req, res) => {
 });
 
 // start server
-app.listen(PORT, () => console.log(`Server listening on port ${PORT}!`));
+// app.listen(PORT, () => console.log(`Server listening on port ${PORT}!`));
+const options = {
+    key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
+    cert: fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem')),
+};
+
+https.createServer(options, app).listen(PORT, () => console.log(`Server listening on port ${PORT}`));
