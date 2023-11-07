@@ -9,11 +9,10 @@ const cookieParser = require('cookie-parser');
 const credentials = require('./middlewares/credentials');
 const morganMiddleware = require('./middlewares/morgan');
 const fileUpload = require('express-fileupload');
-require('dotenv').config(); // Can remove when migrating to heroku or running heroku local
-const { PORT } = require('./config/serverInfo');
+require('dotenv').config();
 const app = express();
 
-const port = process.env.PORT || PORT;
+const PORT = process.env.PORT || 5001;
 
 app.use(helmet());
 
@@ -66,4 +65,4 @@ app.all('*', (req, res) => {
 });
 
 // start server
-app.listen(port, () => console.log(`Server listening on port ${port}!`));
+app.listen(PORT, () => console.log(`Server listening on port ${PORT}!`));
