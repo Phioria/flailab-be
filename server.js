@@ -36,9 +36,6 @@ app.use(cookieParser());
 
 //Serve static files...
 
-// Temporary Cert Route
-app.use('/.well-known/pki-validation/A79F0C2D9267B0594DF7BF112CCDE54C.txt', require('./routes/cert'));
-
 // define routes
 app.use('/auth', require('./routes/auth'));
 app.use('/register', require('./routes/register'));
@@ -69,10 +66,10 @@ app.all('*', (req, res) => {
 });
 
 // start server
-app.listen(PORT, () => console.log(`Server listening on port ${PORT}!`));
-/*const options = {
-    key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
-    cert: fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem')),
-};*/
+// app.listen(PORT, () => console.log(`Server listening on port ${PORT}!`));
+const options = {
+    key: fs.readFileSync(path.join(__dirname, 'cert', 'private.key')),
+    cert: fs.readFileSync(path.join(__dirname, 'cert', 'certificate.crt')),
+};
 
-//https.createServer(options, app).listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+https.createServer(options, app).listen(PORT, () => console.log(`Server listening on port ${PORT}`));
