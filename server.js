@@ -9,7 +9,7 @@ const cookieParser = require('cookie-parser');
 const credentials = require('./middlewares/credentials');
 const morganMiddleware = require('./middlewares/morgan');
 const fileUpload = require('express-fileupload');
-require('dotenv').config();
+//require('dotenv').config();
 const app = express();
 
 const PORT = process.env.PORT || 5001;
