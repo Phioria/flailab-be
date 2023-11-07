@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const { updatePasswordLink } = require('../utils/mailer');
 const randomBytes = require('randombytes');
 const logger = require('../utils/logger');
-const { PORT, BASE_URL } = require('../config/serverInfo');
+const { FRONT_END_BASE_URL } = require('../config/serverInfo');
 
 const handleLogin = async (req, res) => {
     const { user, pwd } = req.body;
@@ -109,9 +109,9 @@ const requestPasswordReset = async (req, res) => {
 
     // This should be the url and port for the front end not the back end
     // const port = process.env.PORT || PORT;
-    const port = 3000;
+    // const port = 3000;
 
-    const tokenLink = `${BASE_URL}:${port}/reset/${foundUser.uid}/${resetToken}`;
+    const tokenLink = `${FRONT_END_BASE_URL}/reset/${foundUser.uid}/${resetToken}`;
 
     await foundUser
         .update({ reset_token: resetToken, reset_token_exp: tokenExpiration })

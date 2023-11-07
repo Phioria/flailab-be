@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const { sendMail } = require('../utils/mailer');
 const randomBytes = require('randombytes');
 const logger = require('../utils/logger');
-const { PORT, BASE_URL } = require('../config/serverInfo');
+const { FRONT_END_BASE_URL } = require('../config/serverInfo');
 
 const handleNewUser = async (req, res) => {
     const { user, pwd, firstName, lastName } = req.body;
@@ -36,9 +36,10 @@ const handleNewUser = async (req, res) => {
         const createdUser = await Users.create(newUser);
 
         // This should be the port and url of the front end, not back end
-        const port = process.env.PORT || PORT;
+        //const port = process.env.PORT || PORT;
 
-        const tokenLink = `${BASE_URL}:${port}/verify-email/${createdUser.uid}/${createdUser.email_token}`;
+        //const tokenLink = `${BASE_URL}:${port}/verify-email/${createdUser.uid}/${createdUser.email_token}`;
+        const tokenLink = `${FRONT_END_BASE_URL}/verify-email/${createdUser.uid}/${createdUser.email_token}`;
 
         // Added await here, sendMail() is an async function, so it returns a promise
         await sendMail(createdUser.username, createdUser.first_name, tokenLink);
@@ -66,9 +67,9 @@ const sendVerificationEmail = async (req, res) => {
         const tokenExpiration = Date.now() + 1000 * 60 * 20; // 20 minutes from now
 
         // Should be front end port...in the future, this will likely be omitted
-        const port = 3000;
+        //const port = 3000;
 
-        const emailTokenLink = `${BASE_URL}:${port}/verify-email/${foundUser.uid}/${emailToken}`;
+        const emailTokenLink = `${FRONT_END_BASE_URL}/verify-email/${foundUser.uid}/${emailToken}`;
 
         try {
             await foundUser.update({ email_token: emailToken, email_token_exp: tokenExpiration });
