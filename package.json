@@ -1,5 +1,5 @@
 {
-    "name": "template-express-js",
+    "name": "omicsbase-api",
     "version": "1.0.0",
     "description": "API for handling upload, storage, and delivery of records pertaining to the Lai Lab's Biological data",
     "main": "server.js",
