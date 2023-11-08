@@ -61,13 +61,15 @@ exports.createMultipleRecords = async (req, res) => {
         const storedFilename = `${Date.now()}-omicsbase-${newFile.name}`;
         const uploadPath = './assets/uploads/' + storedFilename;
 
-        if (newFile.mimetype !== 'text/csv' && newFile.mimetype !== 'text/plain' && newFile.mimetype !== 'application/vnd.ms-excel') {
-            logger.log('info', `[createMultipleRecords] - USER: [${user_name}] attempted to upload a non-csv file`);
-            logger.log('info', `File Info: ${newFile.name} - ${newFile.mimetype}`);
-            return res.status(400).json({
-                message: 'File received was not a CSV file.',
-                reason: 'file-type',
-            });
+        if (true) {
+            // Temporarily removing file type checking as it wasn't catching every possible mime type
+            // if (newFile.mimetype !== 'text/csv' && newFile.mimetype !== 'text/plain' && newFile.mimetype !== 'application/vnd.ms-excel') {
+            //     logger.log('info', `[createMultipleRecords] - USER: [${user_name}] attempted to upload a non-csv file`);
+            //     logger.log('info', `File Info: ${newFile.name} - ${newFile.mimetype}`);
+            //     return res.status(400).json({
+            //         message: 'File received was not a CSV file.',
+            //         reason: 'file-type',
+            //     });
         } else {
             let bad_headers = [];
             let bad_rows = [];

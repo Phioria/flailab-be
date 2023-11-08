@@ -22,7 +22,7 @@ const updateUserRoles = async (req, res) => {
     await foundUser
         .update({ roles: roles })
         .then(() => {
-            logger.log('info', `[updateUserRoles] - USER: [${foundUser.username}] has been given these roles: ${roles}`);
+            logger.log('info', `[updateUserRoles] - USER: [${foundUser.username}] has been given these roles: ${JSON.stringify(roles)}`);
             return res.sendStatus(204);
         })
         .catch((err) => {
