@@ -4,7 +4,7 @@ const logger = require('../utils/logger');
 
 const getAllUsers = async (req, res) => {
     // Return only the necessary fields
-    const users = await Users.findAll({ attributes: { exclude: [password, refresh_token, email_token] } });
+    const users = await Users.findAll({ attributes: { exclude: ['password', 'refresh_token', 'email_token'] } });
     if (!users) return res.status(204).json({ message: 'No users found' });
     return res.status(200).json(users);
 }; // End getAllUsers function
