@@ -141,13 +141,13 @@ exports.createMultipleRecords = async (req, res) => {
                 });
 
             // Delete the uploaded file, as it is no longer needed
-            fs.unlink(uploadPath, (err) => {
-                if (err) {
-                    logger.log('error', `[createMultipleRecords] - Upload Deletion Error - ${err.message}`);
-                    throw err;
-                }
-                logger.log('info', `[createMultipleRecords] - ${storedFilename} deleted successfully.`);
-            });
+            // fs.unlink(uploadPath, (err) => {
+            //     if (err) {
+            //         logger.log('error', `[createMultipleRecords] - Upload Deletion Error - ${err.message}`);
+            //         throw err;
+            //     }
+            //     logger.log('info', `[createMultipleRecords] - ${storedFilename} deleted successfully.`);
+            // });
         }
     } catch (err) {
         logger.log('error', `[createMultipleRecords] - ${err.message}`);
