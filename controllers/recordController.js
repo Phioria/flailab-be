@@ -79,7 +79,10 @@ exports.createMultipleRecords = async (req, res) => {
 
             fs.createReadStream(uploadPath)
                 .pipe(csv.parse({ headers: true, trim: true, ignoreEmpty: true }))
-                .on('error', (error) => logger.log('error', `[createMultipleRecords] - CSV Upload Error: ${error}`))
+                .on('error', (error) => {
+                    logger.log('error', `[createMultipleRecords] - CSV Upload Error: ${error}`);
+                    return res.status(400).json({ message: error.message });
+                })
                 .on('headers', (headers) => {
                     headers.map((header) => {
                         if (!validHeader(header)) bad_headers.push(header);
