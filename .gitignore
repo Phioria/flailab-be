@@ -22,3 +22,6 @@ prettierrc.json
 
 # CSV Uploads
 *.csv
+
+# Certificates
+/cert

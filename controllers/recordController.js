@@ -61,7 +61,7 @@ exports.createMultipleRecords = async (req, res) => {
         const storedFilename = `${Date.now()}-omicsbase-${newFile.name}`;
         const uploadPath = './assets/uploads/' + storedFilename;
 
-        if (true) {
+        if (false) {
             // Temporarily removing file type checking as it wasn't catching every possible mime type
             // if (newFile.mimetype !== 'text/csv' && newFile.mimetype !== 'text/plain' && newFile.mimetype !== 'application/vnd.ms-excel') {
             //     logger.log('info', `[createMultipleRecords] - USER: [${user_name}] attempted to upload a non-csv file`);
