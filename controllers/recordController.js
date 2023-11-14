@@ -228,7 +228,7 @@ exports.createRecords = async (req, res) => {
                 return res.status(400).json({ message: err.message });
             })
             .validate((data) => validateRow(data, user_roles))
-            .on('data', () => {
+            .on('data', (row) => {
                 // Add the submitting username to the record row
                 row['submitted_by'] = user_name;
                 // Cast the numeric strings to numbers after stripping '%' out assuming anything exists in those fields
