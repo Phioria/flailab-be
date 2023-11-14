@@ -214,7 +214,8 @@ exports.createRecords = async (req, res) => {
         let bad_row_numbers = [];
         let tracks = [];
 
-        fs.createReadStream(uploadPath)
+        const file_handle = fs.createReadStream(uploadPath);
+        file_handle
             .pipe(
                 csv.parse({
                     headers: (headers) => headers.map((h) => h.toLowerCase()),
@@ -241,6 +242,7 @@ exports.createRecords = async (req, res) => {
                 bad_row_numbers.push(rowNumber);
             })
             .on('end', (rowCount) => {
+                file_handle.destroy();
                 if (bad_rows.length) {
                     return res.status(400).json({
                         message: 'One or more rows in the submitted csv file did not pass validation.',
@@ -262,20 +264,20 @@ exports.createRecords = async (req, res) => {
                             });
                         });
                 }
+            })
+            .on('close', () => {
+                fs.unlink(uploadPath, (err) => {
+                    if (err) {
+                        logger.log('error', `[createRecords] - Upload Deletion Error - ${err.message}`);
+                        throw err;
+                    }
+                    logger.log('info', `[createRecords] - ${storedFilename} deleted successfully.`);
+                });
             });
     } catch (err) {
         logger.log('error', `[createRecords] parsing try block catch - ${err.msg}`);
         res.status(500).json({
             message: err.message,
-        });
-    } finally {
-        // Delete the uploaded file, as it is no longer needed
-        fs.unlink(uploadPath, (err) => {
-            if (err) {
-                logger.log('error', `[createRecords] - Upload Deletion Error - ${err.message}`);
-                throw err;
-            }
-            logger.log('info', `[createRecords] - ${storedFilename} deleted successfully.`);
         });
     }
 }; // End createRecords
