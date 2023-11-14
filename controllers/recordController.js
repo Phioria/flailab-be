@@ -174,7 +174,7 @@ exports.createRecords = async (req, res) => {
     }
 
     const newFile = req.files.newFile;
-    if (path.extname(newFile).toLowerCase() !== '.csv') {
+    if (path.extname(newFile.name).toLowerCase() !== '.csv') {
         logger.log('info', `[createMultipleRecords] - USER: [${user_name}] attempted to upload a non-csv file`);
         return res.status(400).json({ message: 'File does not have csv extension.', reason: 'file-type' });
     }
