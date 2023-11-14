@@ -231,31 +231,23 @@ exports.createRecords = async (req, res) => {
             .on('data', (row) => {
                 // Add the submitting username to the record row
                 row['submitted_by'] = user_name;
+
                 // Cast the numeric strings to numbers after stripping '%' out assuming anything exists in those fields
-                if (row['total_mapped'].length) {
-                    row['total_mapped'] = parseFloat(row['total_mapped'].replace('%', ''));
-                }
-                if (row['percent_aligned'].length) {
-                    row['percent_aligned'] = parseFloat(row['percent_aligned'].replace('%', ''));
-                }
-                if (row['percent_uniquely_mapped'].length) {
-                    row['percent_uniquely_mapped'] = parseFloat(row['percent_uniquely_mapped'].replace('%', ''));
-                }
-                if (row['unmapped_reads'].length) {
-                    row['unmapped_reads'] = parseInt(row['unmapped_reads']);
-                }
-                if (row['splice_reads'].length) {
-                    row['splice_reads'] = parseInt(row['splice_reads']);
-                }
-                if (row['non_splice_reads'].length) {
-                    row['non_splice_reads'] = parseInt(row['non_splice_reads']);
-                }
-                if (row['reads_mapped_to_plus'].length) {
-                    row['reads_mapped_to_plus'] = parseInt(row['reads_mapped_to_plus']);
-                }
-                if (row['reads_mapped_to_minus'].length) {
-                    row['reads_mapped_to_minus'] = parseInt(row['reads_mapped_to_minus']);
-                }
+                row['total_mapped'] = row['total_mapped'].length ? parseFloat(row['total_mapped'].replace('%', '')) : null;
+
+                row['percent_aligned'] = row['percent_aligned'].length ? parseFloat(row['percent_aligned'].replace('%', '')) : null;
+
+                row['percent_uniquely_mapped'] = row['percent_uniquely_mapped'].length ? parseFloat(row['percent_uniquely_mapped'].replace('%', '')) : null;
+
+                row['unmapped_reads'] = row['unmapped_reads'].length ? parseInt(row['unmapped_reads']) : null;
+
+                row['splice_reads'] = row['splice_reads'].length ? parseInt(row['splice_reads']) : null;
+
+                row['non_splice_reads'] = row['non_splice_reads'].length ? parseInt(row['non_splice_reads']) : null;
+
+                row['reads_mapped_to_plus'] = row['reads_mapped_to_plus'].length ? parseInt(row['reads_mapped_to_plus']) : null;
+
+                row['reads_mapped_to_minus'] = row['reads_mapped_to_minus'].length ? parseInt(row['reads_mapped_to_minus']) : null;
 
                 tracks.push(row);
             })
