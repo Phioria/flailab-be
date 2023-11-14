@@ -231,10 +231,32 @@ exports.createRecords = async (req, res) => {
             .on('data', () => {
                 // Add the submitting username to the record row
                 row['submitted_by'] = user_name;
-                // Cast the numeric strings to numbers after stripping '%' out
-                row['total_mapped'] = parseFloat(row['total_mapped'].replace('%', ''));
-                row['percent_aligned'] = parseFloat(row['percent_aligned'].replace('%', ''));
-                row['percent_uniquely_mapped'] = parseFloat(row['percent_uniquely_mapped'].replace('%', ''));
+                // Cast the numeric strings to numbers after stripping '%' out assuming anything exists in those fields
+                if (row['total_mapped'].length) {
+                    row['total_mapped'] = parseFloat(row['total_mapped'].replace('%', ''));
+                }
+                if (row['percent_aligned'].length) {
+                    row['percent_aligned'] = parseFloat(row['percent_aligned'].replace('%', ''));
+                }
+                if (row['percent_uniquely_mapped'].length) {
+                    row['percent_uniquely_mapped'] = parseFloat(row['percent_uniquely_mapped'].replace('%', ''));
+                }
+                if (row['unmapped_reads'].length) {
+                    row['unmapped_reads'] = parseInt(row['unmapped_reads']);
+                }
+                if (row['splice_reads'].length) {
+                    row['splice_reads'] = parseInt(row['splice_reads']);
+                }
+                if (row['non_splice_reads'].length) {
+                    row['non_splice_reads'] = parseInt(row['non_splice_reads']);
+                }
+                if (row['reads_mapped_to_plus'].length) {
+                    row['reads_mapped_to_plus'] = parseInt(row['reads_mapped_to_plus']);
+                }
+                if (row['reads_mapped_to_minus'].length) {
+                    row['reads_mapped_to_minus'] = parseInt(row['reads_mapped_to_minus']);
+                }
+
                 tracks.push(row);
             })
             .on('data-invalid', (row, rowNumber) => {

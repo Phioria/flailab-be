@@ -19,6 +19,14 @@ const ALLOWED_CSV_HEADERS = [
     'paper',
     'srr_id',
     'notes',
+    'file_type',
+    'paired_single_ended',
+    'file_name',
+    'unmapped_reads',
+    'reads_mapped_to_plus',
+    'reads_mapped_to_minus',
+    'splice_reads',
+    'non_splice_reads',
 ];
 
 const validHeader = (header) => {

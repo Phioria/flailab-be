@@ -80,6 +80,30 @@ module.exports = (sequelize, Sequelize) => {
         project: {
             type: Sequelize.STRING,
         },
+        file_type: {
+            type: Sequelize.STRING,
+        },
+        paired_single_ended: {
+            type: Sequelize.STRING,
+        },
+        file_name: {
+            type: Sequelize.STRING,
+        },
+        unmapped_reads: {
+            type: Sequelize.INTEGER,
+        },
+        reads_mapped_to_plus: {
+            type: Sequelize.INTEGER,
+        },
+        reads_mapped_to_minus: {
+            type: Sequelize.INTEGER,
+        },
+        splice_reads: {
+            type: Sequelize.INTEGER,
+        },
+        non_splice_reads: {
+            type: Sequelize.INTEGER,
+        },
     });
 
     return Record;
