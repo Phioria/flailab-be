@@ -1,6 +1,6 @@
 const db = require('../models');
 const Records = db.record;
-//const Op = db.Sequelize.Op;
+const path = require('path');
 const fs = require('fs');
 const csv = require('fast-csv');
 const logger = require('../utils/logger');
@@ -159,6 +159,126 @@ exports.createMultipleRecords = async (req, res) => {
         });
     }
 }; // End createMultipleRecords function
+
+// Alternate bulk create with decoupled CSV header and body validation
+exports.createRecords = async (req, res) => {
+    const user_roles = req.roles;
+    const user_name = req.user;
+
+    if (!user_roles || !user_name) {
+        return res.sendStatus(401);
+    }
+
+    if (!req.files || Object.keys(req.files).length === 0) {
+        return res.status(400).json({ message: 'No files were uploaded.', reason: 'empty' });
+    }
+
+    const newFile = req.files.newFile;
+    if (path.extname(newFile).toLowerCase() !== '.csv') {
+        logger.log('info', `[createMultipleRecords] - USER: [${user_name}] attempted to upload a non-csv file`);
+        return res.status(400).json({ message: 'File does not have csv extension.', reason: 'file-type' });
+    }
+
+    const storedFilename = `${Date.now()}-omicsbase-${newFile.name}`;
+    const uploadPath = './assets/uploads/' + storedFilename;
+
+    // Parse first line of file and ensure that headers are valid before proceeding to full processing
+    try {
+        let bad_headers = [];
+
+        await newFile.mv(uploadPath);
+
+        fs.createReadStream(uploadPath)
+            .pipe(csv.parse({ headers: true, trim: true, ignoreEmpty: true }))
+            .on('error', (error) => {
+                logger.log('error', `[createRecords] - CSV Upload Error - Header try block: ${error}`);
+                return res.status(400).json({ message: error.message });
+            })
+            .on('headers', (headers) => {
+                headers.map((header) => {
+                    if (!validHeader(header)) bad_headers.push(header);
+                });
+            })
+            .on('end', () => {
+                if (bad_headers.length) {
+                    return res.status(400).json({ message: 'Headers invalid' });
+                }
+            });
+    } catch (err) {
+        return res.status(500).json({ message: err.message, location: 'header try block' });
+    }
+
+    // If we've made it to this point, the headers are fine...move on to full validation
+    try {
+        let bad_rows = [];
+        let bad_row_numbers = [];
+        let tracks = [];
+
+        fs.createReadStream(uploadPath)
+            .pipe(
+                csv.parse({
+                    headers: (headers) => headers.map((h) => h.toLowerCase()),
+                    trim: true,
+                    ignoreEmpty: true,
+                })
+            )
+            .on('error', (err) => {
+                logger.log('error', `[createRecords] - CSV Upload Error - Parsing try block: ${err}`);
+                return res.status(400).json({ message: err.message });
+            })
+            .validate((data) => validateRow(data, user_roles))
+            .on('data', () => {
+                // Add the submitting username to the record row
+                row['submitted_by'] = user_name;
+                // Cast the numeric strings to numbers after stripping '%' out
+                row['total_mapped'] = parseFloat(row['total_mapped'].replace('%', ''));
+                row['percent_aligned'] = parseFloat(row['percent_aligned'].replace('%', ''));
+                row['percent_uniquely_mapped'] = parseFloat(row['percent_uniquely_mapped'].replace('%', ''));
+                tracks.push(row);
+            })
+            .on('data-invalid', (row, rowNumber) => {
+                bad_rows.push(row);
+                bad_row_numbers.push(rowNumber);
+            })
+            .on('end', (rowCount) => {
+                if (bad_rows.length) {
+                    return res.status(400).json({
+                        message: 'One or more rows in the submitted csv file did not pass validation.',
+                        badRowNumbers: bad_row_numbers,
+                        reason: 'rows',
+                    });
+                } else {
+                    Records.bulkCreate(tracks)
+                        .then(() => {
+                            const successMessage =
+                                rowCount === 1 ? `${rowCount} row added to the database successfully` : `${rowCount} rows added to the database successfully`;
+                            logger.log('info', `[createRecords] - ${successMessage} by USER: [${user_name}]`);
+                            return res.status(201).json({ message: successMessage });
+                        })
+                        .catch((err) => {
+                            logger.log('error', `[createRecords] bulkCreate catch - ${err.msg}`);
+                            res.status(500).json({
+                                message: err.message,
+                            });
+                        });
+                }
+            });
+    } catch (err) {
+        logger.log('error', `[createRecords] parsing try block catch - ${err.msg}`);
+        res.status(500).json({
+            message: err.message,
+        });
+    } finally {
+        // Delete the uploaded file, as it is no longer needed
+        fs.unlink(uploadPath, (err) => {
+            if (err) {
+                logger.log('error', `[createRecords] - Upload Deletion Error - ${err.message}`);
+                throw err;
+            }
+            logger.log('info', `[createRecords] - ${storedFilename} deleted successfully.`);
+        });
+    }
+}; // End createRecords
 
 // Update multiple records
 exports.updateRecords = async (req, res) => {
