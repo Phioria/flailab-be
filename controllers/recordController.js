@@ -233,21 +233,22 @@ exports.createRecords = async (req, res) => {
                 row['submitted_by'] = user_name;
 
                 // Cast the numeric strings to numbers after stripping '%' out assuming anything exists in those fields
-                row['total_mapped'] = row['total_mapped'].length ? parseFloat(row['total_mapped'].replace('%', '')) : null;
+                // Add in optional chaining to make sure these exist
+                row['total_mapped'] = row['total_mapped']?.length ? parseFloat(row['total_mapped'].replace('%', '')) : null;
 
-                row['percent_aligned'] = row['percent_aligned'].length ? parseFloat(row['percent_aligned'].replace('%', '')) : null;
+                row['percent_aligned'] = row['percent_aligned']?.length ? parseFloat(row['percent_aligned'].replace('%', '')) : null;
 
-                row['percent_uniquely_mapped'] = row['percent_uniquely_mapped'].length ? parseFloat(row['percent_uniquely_mapped'].replace('%', '')) : null;
+                row['percent_uniquely_mapped'] = row['percent_uniquely_mapped']?.length ? parseFloat(row['percent_uniquely_mapped'].replace('%', '')) : null;
 
-                row['unmapped_reads'] = row['unmapped_reads'].length ? parseInt(row['unmapped_reads']) : null;
+                row['unmapped_reads'] = row['unmapped_reads']?.length ? parseInt(row['unmapped_reads']) : null;
 
-                row['splice_reads'] = row['splice_reads'].length ? parseInt(row['splice_reads']) : null;
+                row['splice_reads'] = row['splice_reads']?.length ? parseInt(row['splice_reads']) : null;
 
-                row['non_splice_reads'] = row['non_splice_reads'].length ? parseInt(row['non_splice_reads']) : null;
+                row['non_splice_reads'] = row['non_splice_reads']?.length ? parseInt(row['non_splice_reads']) : null;
 
-                row['reads_mapped_to_plus'] = row['reads_mapped_to_plus'].length ? parseInt(row['reads_mapped_to_plus']) : null;
+                row['reads_mapped_to_plus'] = row['reads_mapped_to_plus']?.length ? parseInt(row['reads_mapped_to_plus']) : null;
 
-                row['reads_mapped_to_minus'] = row['reads_mapped_to_minus'].length ? parseInt(row['reads_mapped_to_minus']) : null;
+                row['reads_mapped_to_minus'] = row['reads_mapped_to_minus']?.length ? parseInt(row['reads_mapped_to_minus']) : null;
 
                 tracks.push(row);
             })
