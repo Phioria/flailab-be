@@ -13,6 +13,6 @@ router
 
 router.route('/:id').get(getRecord).delete(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor), deleteRecord);
 
-router.route('/limit').post(getSomeRecords);
+router.route('/:limit/:offset').get(getSomeRecords);
 
 module.exports = router;

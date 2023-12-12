@@ -32,8 +32,7 @@ exports.getAllRecords = async (req, res) => {
 // This function will be used for pagenation to speed up the loading of tracks
 // TODO: Add in some validation for offset and limit to ensure valid values
 exports.getSomeRecords = async (req, res) => {
-    const offset = req.offset;
-    const limit = req.limit;
+    const { offset, limit } = req.params;
 
     await Records.findAll({
         offset: offset,
