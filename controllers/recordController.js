@@ -28,6 +28,33 @@ exports.getAllRecords = async (req, res) => {
         });
 }; // End getAllRecords function
 
+// Get some records
+// This function will be used for pagenation to speed up the loading of tracks
+// TODO: Add in some validation for offset and limit to ensure valid values
+exports.getSomeRecords = async (req, res) => {
+    const offset = req.offset;
+    const limit = req.limit;
+
+    await Records.findAll({
+        offset: offset,
+        limit: limit,
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+    })
+        .then((data) => {
+            if (data) {
+                return res.status(200).json(data);
+            } else {
+                return res.sendStatus(204); // Database empty
+            }
+        })
+        .catch((err) => {
+            logger.log('error', `[getAllRecords] - ${err.message}`);
+            return res.status(500).json({ message: err.message });
+        });
+}; // End getSomeRecords function
+
 // Get one record by :id
 exports.getRecord = async (req, res) => {
     const { id } = req.params;

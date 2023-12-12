@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getAllRecords, createRecords, getRecord, updateRecords, deleteRecord, deleteRecords } = require('../../controllers/recordController');
+const { getAllRecords, createRecords, getRecord, getSomeRecords, updateRecords, deleteRecord, deleteRecords } = require('../../controllers/recordController');
 const ROLES_LIST = require('../../config/roles_list');
 const verifyRoles = require('../../middlewares/verifyRoles');
 
@@ -12,5 +12,7 @@ router
     .delete(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor), deleteRecords);
 
 router.route('/:id').get(getRecord).delete(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor), deleteRecord);
+
+router.route('/limit').post(getSomeRecords);
 
 module.exports = router;
