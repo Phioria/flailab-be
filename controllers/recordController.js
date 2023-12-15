@@ -5,6 +5,7 @@ const fs = require('fs');
 const csv = require('fast-csv');
 const logger = require('../utils/logger');
 const { validHeader, validateRow, ALLOWED_CSV_HEADERS } = require('../utils/validateCsv');
+const { Op } = require('sequelize');
 
 // Get Methods
 // Get all records
@@ -34,6 +35,25 @@ exports.getAllRecords = async (req, res) => {
 exports.getSomeRecords = async (req, res) => {
     const { offset, limit } = req.params;
 
+    try {
+        // todo: Need to make sure it is counting all records in database
+        // todo: not just records that are being returned
+        const response = await Records.findAndCountAll({
+            offset: offset,
+            limit: limit,
+            attributes: {
+                exclude: ['createdAt', 'updatedAt'],
+            },
+        });
+
+        if (response.count === 0) return res.sendStatus(204); // Database empty
+        return res.status(200).json(response); // Should have count and rows
+    } catch (err) {
+        logger.log('error', `[getSomeRecords] - ${err.message}`);
+        return res.status(500).json({ message: err.message });
+    }
+
+    /*
     await Records.findAll({
         offset: offset,
         limit: limit,
@@ -52,7 +72,43 @@ exports.getSomeRecords = async (req, res) => {
             logger.log('error', `[getAllRecords] - ${err.message}`);
             return res.status(500).json({ message: err.message });
         });
+        */
 }; // End getSomeRecords function
+
+// Get some records by search terms
+// This function will also be used for pagenation to speed up the loading of tracks
+// TODO: Add in some validation for offset and limit to ensure valid values
+// TODO: Also add in validation for search terms that are submitted
+// todo - This should be done on the front in, but jic
+exports.searchSomeRecords = async (req, res) => {
+    const { offset, limit } = req.params;
+
+    const { searchTerms } = req.body;
+
+    // This should create an array of objects in the proper search format
+    // For sequelize
+    const searchData = searchTerms.map((s) => {
+        return { [s.column]: s.value };
+    });
+
+    try {
+        const response = await Records.findAndCountAll({
+            offset: offset,
+            limit: limit,
+            // Using computed property names with []
+            where: searchData,
+            attributes: {
+                exclude: ['createdAt', 'updatedAt'],
+            },
+        });
+
+        if (response.count === 0) return res.sendStatus(204); // No Results
+        return res.status(200).json(response); // Should have count and rows
+    } catch (err) {
+        logger.log('error', `[getSomeRecords] - ${err.message}`);
+        return res.status(500).json({ message: err.message });
+    }
+}; // End searchSomeRecords function
 
 // Get one record by :id
 exports.getRecord = async (req, res) => {
