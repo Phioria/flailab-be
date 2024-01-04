@@ -84,6 +84,7 @@ exports.searchSomeRecords = async (req, res) => {
     const { offset, limit } = req.params;
 
     const { searchTerms } = req.body;
+    console.log(`searchTerms: ${searchTerms}`);
 
     // This should create an array of objects in the proper search format
     // For sequelize
@@ -105,7 +106,7 @@ exports.searchSomeRecords = async (req, res) => {
         if (response.count === 0) return res.sendStatus(204); // No Results
         return res.status(200).json(response); // Should have count and rows
     } catch (err) {
-        logger.log('error', `[getSomeRecords] - ${err.message}`);
+        logger.log('error', `[searchSomeRecords] - ${err.message}`);
         return res.status(500).json({ message: err.message });
     }
 }; // End searchSomeRecords function
