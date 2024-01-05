@@ -83,10 +83,10 @@ exports.getSomeRecords = async (req, res) => {
 exports.searchSomeRecords = async (req, res) => {
     const { offset, limit } = req.params;
 
-    console.log(req.body);
+    //console.log(req.body);
 
     const { searchTerms } = req.body;
-    console.log(`searchTerms: ${searchTerms}`);
+    //console.log(`searchTerms: ${searchTerms}`);
 
     // This should create an array of objects in the proper search format
     // For sequelize
@@ -99,7 +99,7 @@ exports.searchSomeRecords = async (req, res) => {
             offset: offset,
             limit: limit,
             // Using computed property names with []
-            where: searchData,
+            where: sequelize.where(sequelize.fn('lower', searchData)),
             attributes: {
                 exclude: ['createdAt', 'updatedAt'],
             },
