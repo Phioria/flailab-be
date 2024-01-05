@@ -98,8 +98,9 @@ exports.searchSomeRecords = async (req, res) => {
     */
 
     // Changing structure to include iLike for case insensitive search
+    // % before and after search term to allow partial matches
     const searchData = searchTerms.map((s) => {
-        return { [s.column]: { [Op.iLike]: s.value } };
+        return { [s.column]: { [Op.iLike]: `%${s.value}%` } };
     });
 
     try {
