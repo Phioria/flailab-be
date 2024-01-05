@@ -91,16 +91,15 @@ exports.searchSomeRecords = async (req, res) => {
 
     // This should create an array of objects in the proper search format
     // For sequelize
-    const searchData = searchTerms.map((s) => {
+    /*
+    const oldSearchData = searchTerms.map((s) => {
         return { [s.column]: s.value };
     });
+    */
 
-    // Separating the search columns and values into separate arrays so that we can use the lower fn
-    const searchColumns = searchTerms.map((s) => {
-        return [s.column];
-    });
-    const searchValues = searchTerms.map((s) => {
-        return s.value;
+    // Changing structure to include iLike for case insensitive search
+    const searchData = searchTerms.map((s) => {
+        return { [s.column]: { [Op.iLike]: s.value } };
     });
 
     try {
@@ -108,7 +107,7 @@ exports.searchSomeRecords = async (req, res) => {
             offset: offset,
             limit: limit,
             // Using computed property names with []
-            where: sequelize.where(sequelize.fn('lower', sequelize.col(searchColumns)), sequelize.fn('lower', searchValues)),
+            where: searchData,
             attributes: {
                 exclude: ['createdAt', 'updatedAt'],
             },
