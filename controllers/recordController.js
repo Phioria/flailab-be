@@ -83,6 +83,8 @@ exports.getSomeRecords = async (req, res) => {
 exports.searchSomeRecords = async (req, res) => {
     const { offset, limit } = req.params;
 
+    console.log(req.body);
+
     const { searchTerms } = req.body;
     console.log(`searchTerms: ${searchTerms}`);
 
