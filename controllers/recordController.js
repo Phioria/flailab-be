@@ -95,12 +95,20 @@ exports.searchSomeRecords = async (req, res) => {
         return { [s.column]: s.value };
     });
 
+    // Separating the search columns and values into separate arrays so that we can use the lower fn
+    const searchColumns = searchTerms.map((s) => {
+        return [s.column];
+    });
+    const searchValues = searchTerms.map((s) => {
+        return s.value;
+    });
+
     try {
         const response = await Records.findAndCountAll({
             offset: offset,
             limit: limit,
             // Using computed property names with []
-            where: sequelize.where(sequelize.fn('lower', searchData)),
+            where: sequelize.where(sequelize.fn('lower', sequelize.col(searchColumns)), sequelize.fn('lower', searchValues)),
             attributes: {
                 exclude: ['createdAt', 'updatedAt'],
             },
