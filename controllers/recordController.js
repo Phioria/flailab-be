@@ -6,6 +6,7 @@ const csv = require('fast-csv');
 const logger = require('../utils/logger');
 const { validHeader, validateRow, ALLOWED_CSV_HEADERS } = require('../utils/validateCsv');
 const { Op } = require('sequelize');
+const sequelize = require('sequelize');
 
 // Get Methods
 // Get all records
