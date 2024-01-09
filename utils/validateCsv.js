@@ -37,7 +37,9 @@ const validHeader = (header) => {
 // This ensures that certain rows don't contain any empty data before submission
 const validateRow = (row, roles) => {
     if (roles.includes(ROLES_LIST.Admin)) {
-        return row.dataset.length && row.species.length && row.sequencing_type.length && row.file_location.length && row.library_size; // && row.tissue.length;
+        return (
+            row.dataset.length && row.species.length && row.sequencing_type.length && row.file_location.length && row.library_size.length && row.srr_id.length
+        ); // && row.tissue.length;
     } else {
         // Check to see if the numeric cells are empty then check to see if you can strip a percent sign off them and force them to float. If they're NaN, return false
         // These should always come in as strings to start with, so running .replace on them shouldn't throw an error...guess we'll see
@@ -55,6 +57,7 @@ const validateRow = (row, roles) => {
             row.mutant.length &&
             row.tissue.length &&
             row.sex.length &&
+            row.srr_id.length &&
             isNumberMappedNumeric &&
             isPercentAlignedNumeric &&
             isPercentUniquelyMappedNumeric &&
