@@ -15,6 +15,6 @@ db.sequelize = sequelize;
 db.record = require('./Record')(sequelize, Sequelize);
 db.user = require('./User')(sequelize, Sequelize);
 
-sequelize.sync({ alter: true });
+sequelize.sync({});
 
 module.exports = db;

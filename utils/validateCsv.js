@@ -9,7 +9,7 @@ const ALLOWED_CSV_HEADERS = [
     'mutant',
     'tissue',
     'sex',
-    'total_mapped',
+    'number_mapped',
     'percent_aligned',
     'percent_uniquely_mapped',
     'author',
@@ -27,6 +27,7 @@ const ALLOWED_CSV_HEADERS = [
     'reads_mapped_to_minus',
     'splice_reads',
     'non_splice_reads',
+    'library_size',
 ];
 
 const validHeader = (header) => {
@@ -36,13 +37,14 @@ const validHeader = (header) => {
 // This ensures that certain rows don't contain any empty data before submission
 const validateRow = (row, roles) => {
     if (roles.includes(ROLES_LIST.Admin)) {
-        return row.dataset.length && row.species.length && row.sequencing_type.length && row.file_location.length; // && row.tissue.length;
+        return row.dataset.length && row.species.length && row.sequencing_type.length && row.file_location.length && row.library_size; // && row.tissue.length;
     } else {
         // Check to see if the numeric cells are empty then check to see if you can strip a percent sign off them and force them to float. If they're NaN, return false
         // These should always come in as strings to start with, so running .replace on them shouldn't throw an error...guess we'll see
-        const isTotalMappedNumeric = row.total_mapped.length && !isNaN(parseFloat(row.total_mapped.replace('%', '')));
+        const isNumberMappedNumeric = row.number_mapped.length && !isNaN(parseFloat(row.number_mapped.replace('%', '')));
         const isPercentAlignedNumeric = row.percent_aligned.length && !isNaN(parseFloat(row.percent_aligned.replace('%', '')));
         const isPercentUniquelyMappedNumeric = row.percent_uniquely_mapped.length && !isNaN(parseFloat(row.percent_uniquely_mapped.replace('%', '')));
+        const isLibrarySizeNumeric = row.library_size.length && !isNaN(parseFloat(row.library_size.replace('%', '')));
 
         return (
             row.dataset.length &&
@@ -53,9 +55,10 @@ const validateRow = (row, roles) => {
             row.mutant.length &&
             row.tissue.length &&
             row.sex.length &&
-            isTotalMappedNumeric &&
+            isNumberMappedNumeric &&
             isPercentAlignedNumeric &&
             isPercentUniquelyMappedNumeric &&
+            isLibrarySizeNumeric &&
             row.author.length
         );
     }

@@ -56,7 +56,7 @@ module.exports = (sequelize, Sequelize) => {
         srr_id: {
             type: Sequelize.STRING,
         },
-        total_mapped: {
+        number_mapped: {
             type: Sequelize.FLOAT,
             //allowNull: false,
         },
@@ -102,6 +102,9 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.INTEGER,
         },
         non_splice_reads: {
+            type: Sequelize.INTEGER,
+        },
+        library_size: {
             type: Sequelize.INTEGER,
         },
     });
