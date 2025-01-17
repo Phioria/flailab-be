@@ -68,8 +68,8 @@ app.all('*', (req, res) => {
 // start server
 // app.listen(PORT, () => console.log(`Server listening on port ${PORT}!`));
 const options = {
-    key: fs.readFileSync('/etc/letsencrypt/live/api.flailab.com/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/api.flailab.com/fullchain.pem'),
+    key: fs.readFileSync('./cert/privkey.pem'),
+    cert: fs.readFileSync('./cert/fullchain.pem'),
 };
 
 https.createServer(options, app).listen(PORT, () => console.log(`Server listening on port ${PORT}`));
