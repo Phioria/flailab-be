@@ -16,7 +16,7 @@ const sendMail = async (recipientEmail, recipientFirstName, tokenLink) => {
     // Send mail with defined transport object
     // TODO Change verify link to a frontend link for cors to work
     const info = await transporter.sendMail({
-        from: '"FLaiLab" <admin@phioria.com>', // Sender address
+        from: '"FLaiLab" <admin@flailab.com>', // Sender address
         to: recipientEmail,
         subject: 'Welcome to FLaiLab!',
         html: `<!DOCTYPE html>
@@ -29,7 +29,7 @@ const sendMail = async (recipientEmail, recipientFirstName, tokenLink) => {
         </head>
         <body>
             <h3>Hi ${recipientFirstName}!</h3>
-            <p> Thanks for signing up for <a href="https://flailab.phioria.com">FLaiLab!</a> We hope you enjoy this service.<br>
+            <p> Thanks for signing up for <a href="https://www.flailab.com">FLaiLab!</a> We hope you enjoy this service.<br>
             If you have any problems or suggestions, feel free to reach out to: chris.baugh@gmail.com<br>
             Please click the link below to verify your account.</p>
         
@@ -60,7 +60,7 @@ const updatePasswordLink = async (recipientEmail, tokenLink) => {
     // Send mail with defined transport object
     // TODO Change verify link to a frontend link for cors to work
     const info = await transporter.sendMail({
-        from: '"Chris Baugh" <admin@phioria.com>', // Sender address
+        from: '"FlaiLab" <admin@flailab.com>', // Sender address
         to: recipientEmail,
         subject: 'Password Reset Request',
         html: `<!DOCTYPE html>
