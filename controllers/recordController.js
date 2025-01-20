@@ -344,6 +344,8 @@ exports.createRecords = async (req, res) => {
 
                 row['reads_mapped_to_minus'] = row['reads_mapped_to_minus']?.length ? parseInt(row['reads_mapped_to_minus']) : null;
 
+                row['library_size'] = row['library_size']?.length ? parseInt(row['library_size']) : null;
+
                 tracks.push(row);
             })
             .on('data-invalid', (row, rowNumber) => {
