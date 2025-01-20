@@ -187,7 +187,7 @@ exports.createMultipleRecords = async (req, res) => {
                     // Add the submitting username to the record row
                     row['submitted_by'] = user_name;
                     // Cast the numeric strings to numbers after stripping '%' out
-                    row['total_mapped'] = parseFloat(row['total_mapped'].replace('%', ''));
+                    row['number_mapped'] = parseFloat(row['number_mapped'].replace('%', ''));
                     row['percent_aligned'] = parseFloat(row['percent_aligned'].replace('%', ''));
                     row['percent_uniquely_mapped'] = parseFloat(row['percent_uniquely_mapped'].replace('%', ''));
                     tracks.push(row);
@@ -328,7 +328,7 @@ exports.createRecords = async (req, res) => {
 
                 // Cast the numeric strings to numbers after stripping '%' out assuming anything exists in those fields
                 // Add in optional chaining to make sure these exist
-                row['total_mapped'] = row['total_mapped']?.length ? parseFloat(row['total_mapped'].replace('%', '')) : null;
+                row['number_mapped'] = row['number_mapped']?.length ? parseFloat(row['number_mapped'].replace('%', '')) : null;
 
                 row['percent_aligned'] = row['percent_aligned']?.length ? parseFloat(row['percent_aligned'].replace('%', '')) : null;
 
