@@ -45,7 +45,7 @@ const validateRow = (row, roles) => {
         // These should always come in as strings to start with, so running .replace on them shouldn't throw an error...guess we'll see
         const isNumberMappedNumeric = row.number_mapped.length && !isNaN(parseFloat(row.number_mapped.replace('%', '')));
         const isPercentAlignedNumeric = row.percent_aligned.length && !isNaN(parseFloat(row.percent_aligned.replace('%', '')));
-        const isPercentUniquelyMappedNumeric = row.percent_uniquely_mapped.length && !isNaN(parseFloat(row.percent_uniquely_mapped.replace('%', '')));
+        //const isPercentUniquelyMappedNumeric = row.percent_uniquely_mapped.length && !isNaN(parseFloat(row.percent_uniquely_mapped.replace('%', '')));
         const isLibrarySizeNumeric = row.library_size.length && !isNaN(parseFloat(row.library_size.replace('%', '')));
 
         return (
@@ -57,10 +57,10 @@ const validateRow = (row, roles) => {
             row.mutant.length &&
             row.tissue.length &&
             row.sex.length &&
-            row.srr_id.length &&
+            //row.srr_id.length &&
             isNumberMappedNumeric &&
             isPercentAlignedNumeric &&
-            isPercentUniquelyMappedNumeric &&
+            //isPercentUniquelyMappedNumeric &&
             isLibrarySizeNumeric &&
             row.author.length
         );
