@@ -14,7 +14,6 @@ const sendMail = async (recipientEmail, recipientFirstName, tokenLink) => {
     });
 
     // Send mail with defined transport object
-    // TODO Change verify link to a frontend link for cors to work
     const info = await transporter.sendMail({
         from: '"FLaiLab" <admin@flailab.com>', // Sender address
         to: recipientEmail,
@@ -58,7 +57,6 @@ const updatePasswordLink = async (recipientEmail, tokenLink) => {
     });
 
     // Send mail with defined transport object
-    // TODO Change verify link to a frontend link for cors to work
     const info = await transporter.sendMail({
         from: '"FlaiLab" <admin@flailab.com>', // Sender address
         to: recipientEmail,

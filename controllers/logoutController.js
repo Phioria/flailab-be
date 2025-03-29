@@ -24,7 +24,6 @@ const handleLogout = async (req, res) => {
         }
 
         // Delete refresh token in db
-        // ! Is this syntax correct for sequelize?
         foundUser.refresh_token = '';
         await foundUser.save();
 

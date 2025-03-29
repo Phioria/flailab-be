@@ -80,7 +80,7 @@ exports.getSomeRecords = async (req, res) => {
 // This function will also be used for pagenation to speed up the loading of tracks
 // TODO: Add in some validation for offset and limit to ensure valid values
 // TODO: Also add in validation for search terms that are submitted
-// todo - This should be done on the front in, but jic
+// todo - This should be done on the front end, but jic
 exports.searchSomeRecords = async (req, res) => {
     const { offset, limit } = req.params;
 
@@ -141,7 +141,6 @@ exports.getRecord = async (req, res) => {
 
 // Post Methods
 // Create several records from a csv file
-// TODO Should there be an await somewhere in here if it's async??
 exports.createMultipleRecords = async (req, res) => {
     try {
         const user_roles = req.roles;
