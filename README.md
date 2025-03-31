@@ -1,4 +1,4 @@
-## Flailab API (formerly known as omicsbase-api)
+## Flailab-be (formerly known as omicsbase-api)
 
 This is a node express based REST API that serves as the backend for the
 flailab.com website.
